@@ -14,8 +14,18 @@ class SpreadsheetReader {
                 $results[$indexOfSheet][$indexOfRow] = array();
                 $indexOfCol = 0;
                 foreach ($row->col as $col) {
-                    $results[$indexOfSheet][$indexOfRow][$indexOfCol] = trim((string)$col);
-                    ++$indexOfCol;
+                    if (($attrs = $col->attributes()) and isset($attrs['number'])) {
+                        $number = $attrs['number'];
+                        while ($number > $indexOfCol)
+                            $results[$indexOfSheet][$indexOfRow][$indexOfCol++] = '';
+                        // attribute['number'] is the column number of cell.
+                        // For save space, it might ignore empty cells.
+                        // example: values of column 2nd and 3rd are empty.
+                        //   <col number="0">4</col>
+                        //   <col number="3">Dman</col>
+                        // Therefore we need put those empty cells back according to attribute['number'].
+                    }
+                    $results[$indexOfSheet][$indexOfRow][$indexOfCol++] = trim((string)$col);
                 }
                 ++$indexOfRow;
             }
@@ -38,4 +48,7 @@ class SpreadsheetReader {
         return $this->_toArray($xmlString);
     }
 }
+
+//$reader = new SpreadsheetReader;
+//$sheets = $reader->read('Excel/jxl_test.xml');
 ?>

@@ -7,8 +7,7 @@ if (!defined("PHPUnit_MAIN_METHOD")) {
 require_once "PHPUnit/Framework/TestCase.php";
 require_once "PHPUnit/Framework/TestSuite.php";
 
-require_once 'SpreadsheetReader/SpreadsheetReader.php';
-require_once 'SpreadsheetReader_Excel.php';
+require_once dirname(__FILE__) . '/SpreadsheetReader_Excel.php';
 
 /**
  * Test class for SpreadsheetReader_Excel.
@@ -95,6 +94,8 @@ class SpreadsheetReader_ExcelTest extends PHPUnit_Framework_TestCase {
         $this->assertContains('324203026', $sheets[0][4]);
         $columnB = ord('B') - ord('A');
         $this->assertEquals(170292, $sheets[1][37][$columnB]);
+        $this->assertEquals('324201721', $sheets[0][20][3]);
+        $this->assertEquals(115, $sheets[1][30][5]);
     }
 
     /**
