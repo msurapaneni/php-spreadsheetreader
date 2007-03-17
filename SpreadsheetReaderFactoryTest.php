@@ -63,6 +63,21 @@ class SpreadsheetReaderFactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(170292, $sheets[1][37][$columnB]);
     }
     /**
+     * Test for CSVReader
+     */
+    public function testCsvReader() {
+        // Remove the following line when you implement this test.
+        $xlsFilePath = 'CSV/test.csv';
+        $reader = SpreadsheetReaderFactory::reader($xlsFilePath);
+        $sheets = $reader->read($xlsFilePath);
+
+        $this->assertEquals(1, count($sheets));
+        $this->assertEquals(128, count($sheets[0]));
+        $this->assertEquals(11, count($sheets[0][0]));
+        $this->assertContains('324203026', $sheets[0][3]);
+        $this->assertEquals('153186', $sheets[0][19][1]);
+    }
+    /**
      * Test for ExcelReader
      */
     public function testXlsReader() {

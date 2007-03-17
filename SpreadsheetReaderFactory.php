@@ -6,13 +6,17 @@ class SpreadsheetReaderFactory {
     }
 
     private static $classNameMap = array(
-        'xls' => array(
-            'name' => 'SpreadsheetReader_Excel',
-            'path' => 'Excel/SpreadsheetReader_Excel'
-        ),
         'ods' => array(
             'name' => 'SpreadsheetReader_OpenDocumentSheet',
             'path' => 'OpenDocumentSheet/SpreadsheetReader_OpenDocumentSheet'
+        ),
+        'csv' => array(
+            'name' => 'SpreadsheetReader_CSV',
+            'path' => 'CSV/SpreadsheetReader_CSV'
+        ),
+        'xls' => array(
+            'name' => 'SpreadsheetReader_Excel',
+            'path' => 'Excel/SpreadsheetReader_Excel'
         )
     );
 
