@@ -1,5 +1,5 @@
 <?php
-require_once '../SpreadsheetReader.php';
+//require_once '../SpreadsheetReader.php';
 class SpreadsheetReader_Excel extends SpreadsheetReader {
     private static $jxlCommand = FALSE;
 

@@ -1,5 +1,5 @@
 <?php
-require_once '../SpreadsheetReader.php';
+//require_once 'SpreadsheetReader/SpreadsheetReader.php';
 class SpreadsheetReader_OpenDocumentSheet extends SpreadsheetReader {
     protected $_odsXml;
     protected $_xsl;
