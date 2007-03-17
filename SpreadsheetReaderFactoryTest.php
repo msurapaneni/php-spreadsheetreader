@@ -68,7 +68,7 @@ class SpreadsheetReaderFactoryTest extends PHPUnit_Framework_TestCase {
     public function testXlsReader() {
         // Remove the following line when you implement this test.
         $xlsFilePath = 'Excel/test.xls';
-        $reader = SpreadsheetReaderFactory::reader($xlsFilePath);
+        $reader = SpreadsheetReaderFactory::reader('xls');
         $sheets = $reader->read($xlsFilePath);
 
         $this->assertEquals(2, count($sheets));

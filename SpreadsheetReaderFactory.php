@@ -16,14 +16,25 @@ class SpreadsheetReaderFactory {
         )
     );
 
+    /**
+     *
+     * @param   $filePath, $filePath of spreadsheet file, or $extName of spreadsheet.
+     *          example: 'test.xls', or just 'xls'.
+     *
+     * @return  an instance of reader.
+     * @access  public
+     * @static
+     */
     public static function &reader($filePath) {
         $returnFalse = FALSE;
 
-        if (!is_readable($filePath)) {
+        if (is_readable($filePath))
+            $ext = pathinfo($filePath, PATHINFO_EXTENSION);
+        else if (isset(self::$classNameMap[$filePath]))
+            $ext = $filePath;
+        else
             return $returnFalse;
-        }
 
-        $ext = pathinfo($filePath, PATHINFO_EXTENSION);
         if (isset(self::$classNameMap[$ext]['name'])) {
             $className = self::$classNameMap[$ext]['name'];
             require_once dirname(__FILE__) . '/' . self::$classNameMap[$ext]['path'] . '.php';
