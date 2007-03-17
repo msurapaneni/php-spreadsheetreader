@@ -7,6 +7,7 @@ if (!defined("PHPUnit_MAIN_METHOD")) {
 require_once "PHPUnit/Framework/TestCase.php";
 require_once "PHPUnit/Framework/TestSuite.php";
 
+require_once 'SpreadsheetReader/SpreadsheetReader.php';
 require_once 'SpreadsheetReader_OpenDocumentSheet.php';
 
 /**
@@ -103,7 +104,7 @@ class SpreadsheetReader_OpenDocumentSheetTest extends PHPUnit_Framework_TestCase
      * @test
      */
     public function ReadExcelFileToXmlString() {
-        $xlsFilePath = 'test.xls';
+        $xlsFilePath = 'test.ods';
         $xmlString = $this->xlsReader->read($xlsFilePath, 'string');
         $this->assertTrue(strpos($xmlString, '<?xml ') == 0);
     }
