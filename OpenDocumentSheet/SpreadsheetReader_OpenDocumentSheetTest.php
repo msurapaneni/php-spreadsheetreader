@@ -76,11 +76,11 @@ class SpreadsheetReader_OpenDocumentSheetTest extends PHPUnit_Framework_TestCase
      * case: 讀取 test.xls
      * result:
      *  2 sheets.
-     *  129 rows of first sheet.
+     *  128 rows of first sheet.
      *  38 rows of second sheet.
-     *  6 columns of first row of first sheet.
-     *  Row 5 of first sheet contains value '324203026'
-     *  Value of B:38 of second sheet is 164911.
+     *  11 columns of first row of first sheet.
+     *  Row 4 of first sheet contains value '324203026'
+     *  Value of B:38 of second sheet is 170292.
      *
      * @test
      */
@@ -97,7 +97,7 @@ class SpreadsheetReader_OpenDocumentSheetTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * case: 讀取 test.xls AS XMLString.
+     * case: 讀取 test.ods AS XMLString.
      * result:
      *  A XML String.
      *

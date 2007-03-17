@@ -60,14 +60,14 @@ class SpreadsheetReader_CSVTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * case: 讀取 test.xls
+     * case: 讀取 test.csv
      * result:
-     *  2 sheets.
-     *  129 rows of first sheet.
+     *  1 sheets.
+     *  128 rows of first sheet.
      *  38 rows of second sheet.
-     *  6 columns of first row of first sheet.
-     *  Row 5 of first sheet contains value '324203026'
-     *  Value of B:38 of second sheet is 153186.
+     *  11 columns of first row of first sheet.
+     *  Row 4 of first sheet contains value '324203026'
+     *  Value of B:20 of sheet is 153186.
      *
      * @test
      */
