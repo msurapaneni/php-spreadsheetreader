@@ -1,5 +1,6 @@
 <?php
-//require_once '../SpreadsheetReader.php';
+if (!class_exists('SpreadsheetReader'))
+    require_once dirname(__FILE__) . '/../SpreadsheetReader.php';
 class SpreadsheetReader_Excel extends SpreadsheetReader {
     private static $jxlCommand = FALSE;
 

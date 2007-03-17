@@ -80,7 +80,7 @@ class SpreadsheetReader_ExcelTest extends PHPUnit_Framework_TestCase {
      *  38 rows of second sheet.
      *  6 columns of first row of first sheet.
      *  Row 5 of first sheet contains value '324203026'
-     *  Value of B:38 of second sheet is 164911.
+     *  Value of B:38 of second sheet is 170292.
      *
      * @test
      */
