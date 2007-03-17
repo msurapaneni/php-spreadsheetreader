@@ -1,7 +1,6 @@
 <?php
 require_once '../SpreadsheetReader.php';
 class SpreadsheetReader_Excel extends SpreadsheetReader {
-    //private static $jxl = ;
     private static $jxlCommand = FALSE;
 
     /**
@@ -50,33 +49,12 @@ class SpreadsheetReader_Excel extends SpreadsheetReader {
         if ($output[0] != '<?xml version="1.0" ?>') {
             return $ReturnFalse;
         }
-        //file_put_contents('test.xml', implode("\n", $output));
 
         $xmlString = implode('', $output);
         if ($returnType == 'string') {
             return $xmlString;
         }
-        if (FALSE === ($xml = simplexml_load_string($xmlString))) {
-            return $ReturnFalse; //FALSE
-        }
-
-        $results = array();
-        $indexOfSheet = 0;
-        foreach ($xml->sheet as $sheet) {
-            $results[$indexOfSheet] = array();
-            $indexOfRow = 0;
-            foreach ($sheet->row as $row) {
-                $results[$indexOfSheet][$indexOfRow] = array();
-                $indexOfCol = 0;
-                foreach ($row->col as $col) {
-                    $results[$indexOfSheet][$indexOfRow][$indexOfCol] = trim((string)$col);
-                    ++$indexOfCol;
-                }
-                ++$indexOfRow;
-            }
-            ++$indexOfSheet;
-        }
-        return $results;
+        return $this->_toArray($xmlString);
     }
 }
 ?>
