@@ -17,6 +17,10 @@ class SpreadsheetReaderFactory {
         'xls' => array(
             'name' => 'SpreadsheetReader_Excel',
             'path' => 'Excel/SpreadsheetReader_Excel'
+        ),
+        'txt' => array(
+            'name' => 'SpreadsheetReader_Text',
+            'path' => 'Text/SpreadsheetReader_Text'
         )
     );
 

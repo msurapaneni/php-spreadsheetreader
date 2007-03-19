@@ -94,6 +94,30 @@ class SpreadsheetReaderFactoryTest extends PHPUnit_Framework_TestCase {
         $columnB = ord('B') - ord('A');
         $this->assertEquals(170292, $sheets[1][37][$columnB]);
     }
+
+    /**
+     * Test for TextReader
+     */
+    public function testReadFromTextFileWithPattern() {
+        $sheetFilePath = 'Text/test2.txt';
+        $reader = SpreadsheetReaderFactory::reader('txt');
+
+        $pattern = '/(?P<ean>\d{1,13})\s*(\d+)?/';
+        $reader->pattern($pattern);
+        $sheets = $reader->read($sheetFilePath);
+
+        $this->assertEquals(1, count($sheets));
+        $this->assertEquals(103, count($sheets[0]));
+
+        $this->assertEquals(101090035, $sheets[0][0][0]);
+        $this->assertEquals(1800, $sheets[0][1][1]);
+
+        $this->assertEquals(1040100762215, $sheets[0][2][0]);
+        $this->assertEquals(100100, $sheets[0][2][1]);
+
+        $this->assertFalse(isset($sheets[0][7][1]));
+    }
+
 }
 
 // Call SpreadsheetReaderFactoryTest::main() if this source file is executed directly.
