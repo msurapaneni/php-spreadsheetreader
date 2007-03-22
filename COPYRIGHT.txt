@@ -1,4 +1,4 @@
-php-spreadsheetreader - A PHP library for read spreadsheet files
+php-SpreadsheetReader - A PHP library for read spreadsheet files
 Copyright (C) 2006,2007 Shih Yuncheng <shirock@educities.edu.tw>
                     http://code.google.com/p/php-spreadsheetreader/
 
