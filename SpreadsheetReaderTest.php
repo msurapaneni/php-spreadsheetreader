@@ -56,6 +56,15 @@ class SpreadsheetReaderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(126779, $sheets[0][8][1]);
         $this->assertEquals(121188, $sheets[0][8][10]);
     }
+
+    public function testReadExcel2kXML() {
+        // Remove the following line when you implement this test.
+        $reader = new SpreadsheetReader;
+        $sheets = $reader->read('test.excel2k.xml');
+        $this->assertTrue($sheets !== false);
+        $this->assertEquals(3, count($sheets));
+        $this->assertEquals('c', $sheets[0][2][5]);
+    }
 }
 
 // Call SpreadsheetReaderTest::main() if this source file is executed directly.
