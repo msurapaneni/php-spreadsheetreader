@@ -24,8 +24,24 @@ class SpreadsheetReader_Excel extends SpreadsheetReader {
             );
             self::$jxlCommand = $javaPath . ' -jar "' . $jxlPath . '" -xml';
         }
+
+        if (!self::$ignoreChar) {
+            self::$ignoreChar = array();
+            for ($i = 1; $i < 32; ++$i) {
+                if ($i == 10 or $i == 13)
+                    continue; //skip LF and CR
+                self::$ignoreChar[] = chr($i);
+            }
+        }
     }
     
+    /**
+     * Sometimes, data will contain non-readable chars.
+     * XML parser will occur a parse error.
+     * So we need to strip those non-readable chars.
+     */
+    private static $ignoreChar = false;
+
     /**
      * $sheets = read('~/example.xls');
      * $sheet = 0;
@@ -51,7 +67,11 @@ class SpreadsheetReader_Excel extends SpreadsheetReader {
             return $ReturnFalse;
         }
 
-        $xmlString = implode('', $output);
+        //Strip those non-readable chars
+        $xmlString = str_replace(self::$ignoreChar,
+            '',
+            implode('', $output)
+        );
         if ($returnType == 'string') {
             return $xmlString;
         }
