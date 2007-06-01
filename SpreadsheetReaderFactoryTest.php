@@ -118,6 +118,31 @@ class SpreadsheetReaderFactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse(isset($sheets[0][7][1]));
     }
 
+    /**
+     * Test for XmlReader
+     */
+    public function testReadFromExcel2kXmlFile() {
+        $sheetFilePath = 'test.excel2k.xml';
+        $reader = SpreadsheetReaderFactory::reader($sheetFilePath);
+        $sheets = $reader->read($sheetFilePath);
+
+        $this->assertTrue($sheets !== false);
+        $this->assertEquals(3, count($sheets));
+        $this->assertEquals('c', $sheets[0][2][5]);
+    }
+
+    public function testReadFromXmlFile() {
+        $sheetFilePath = 'test.workbook.xml';
+        $reader = SpreadsheetReaderFactory::reader($sheetFilePath);
+        $sheets = $reader->read($sheetFilePath);
+
+        $this->assertTrue($sheets !== false);
+        $this->assertEquals(1, count($sheets));
+        $this->assertEquals(129, count($sheets[0]));
+        $this->assertEquals(2, $sheets[0][8][0]);
+        $this->assertEquals(126779, $sheets[0][8][1]);
+        $this->assertEquals(121188, $sheets[0][8][10]);
+    }
 }
 
 // Call SpreadsheetReaderFactoryTest::main() if this source file is executed directly.
