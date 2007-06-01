@@ -37,10 +37,8 @@ class SpreadsheetReaderFactory {
         $returnFalse = FALSE;
 
         if (is_readable($filePath))
-            $ext = pathinfo($filePath, PATHINFO_EXTENSION);
-        else if (isset(self::$classNameMap[$filePath]))
-            $ext = $filePath;
-        else
+            $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        else if (!isset(self::$classNameMap[$ext = strtolower($filePath)]))
             return $returnFalse;
 
         if (isset(self::$classNameMap[$ext]['name'])) {
