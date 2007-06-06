@@ -58,16 +58,16 @@
 </sheet>
 </xsl:template>
 
-<!-- only output tables which have text in their first cell -->
+<!-- REMOVE THIS:only output tables which have text in their first cell -->
 <xsl:template match="table:table-row">
 	<xsl:param name="type"/>
-	<xsl:if test="table:table-cell[1]/text:p">
+	<!--xsl:if test="table:table-cell[1]/text:p"-->
 		<row>
 			<xsl:apply-templates select="table:table-cell">
 				<xsl:with-param name="type" select="$type"/>
 			</xsl:apply-templates>
 		</row>
-	</xsl:if>
+	<!--/xsl:if-->
 </xsl:template>
 
 <xsl:template match="table:table-cell">
