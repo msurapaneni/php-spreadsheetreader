@@ -83,6 +83,24 @@ class SpreadsheetReaderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(45665, $sheets[0][0]['EAN13']);
         $this->assertEquals('BVCF', $sheets[1][2]['NAME']);
     }
+
+    public function testSheetsAsXml() {
+        $reader = new SpreadsheetReader;
+        $sheets = array(
+            array(
+                array('Field1', 'Field2'),
+                array(1,2)
+            ),
+            array(
+                array('Field1', 'Field2'),
+                array('abc','xyz')
+            )
+        );
+        $xmlString = $reader->asXml($sheets);
+        $sampleXmlString = file_get_contents('test.asXml_sample.xml');
+        $this->assertTrue($sampleXmlString == $xmlString);
+        //$this->assertEquals($sampleXmlString, $xmlString);
+    }
 }
 
 // Call SpreadsheetReaderTest::main() if this source file is executed directly.

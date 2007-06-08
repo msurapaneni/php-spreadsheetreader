@@ -177,6 +177,57 @@ class SpreadsheetReader {
         }
         return $this->_toArray($xmlString, $returnType);
     }
+    
+    /**
+     * make $sheets as Xml string (Excel XML format).
+     *
+     * @param  $sheets      An array of sheets.
+     * @param  [$sourceCharset]
+     *      It will always make an XML string encoded by UTF-8.
+     *      If your source is not encoded by UTF-8, you need tell it
+     *      for convert to UTF-8.
+     *
+     * @return  A XML string.
+     */
+    public function asXml(&$sheets, $sourceCharset = 'utf-8') {
+        $doc = new SimpleXMLElement(
+'<?xml version="1.0" encoding="utf-8"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40"></Workbook>'
+);
+
+        $iconv = ($sourceCharset == 'utf-8' ? false : true);
+        $indexOfSheet = 0;
+        foreach ($sheets as $sheet) {
+            //<Worksheet ss:Name="Sheet1">
+            //<Table>
+            $worksheetNode = $doc->addChild('Worksheet');
+            //$worksheetNode->addAttribute('ss:Name', 'sheet1');//BUG?
+            $worksheetNode['ss:Name'] = 'sheet' . (++$indexOfSheet);
+
+            $worksheetNode->Table = '';//add a child with value '' by setter
+            //$tableNode = $worksheetNode->addChild('Table');/add a child by addChild()
+
+            foreach ($sheet as $row) {
+                //<Row>
+                $rowNode = $worksheetNode->Table->addChild('Row');
+
+                foreach ($row as $col) {
+                    //<Cell><Data ss:Type="Number">1</Data></Cell>
+                    $cellNode = $rowNode->addChild('Cell');
+                    $cellNode->Data = ($iconv
+                        ? iconv($sourceCharset, 'utf-8//IGNORE', $col)
+                        : $col
+                    );
+                    $cellNode->Data['ss:Type'] = 'String';
+                }
+            }
+        }
+        return $doc->asXML();
+    }
 }
 
 //$reader = new SpreadsheetReader;
