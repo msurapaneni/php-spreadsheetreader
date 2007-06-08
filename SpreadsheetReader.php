@@ -6,18 +6,63 @@ class SpreadsheetReader {
     const READ_HASH = 1;
     const READ_XMLSTRING = 3;
 
+    private static function &X_initFieldNameSet(&$fieldNameSet, &$row) {
+        $fieldNameSet = array(); //reset
+        foreach ($row->col as $col) {
+            $fieldNameSet[] = self::_colValue($col);
+        }
+        return $fieldNameSet;
+    }
+    private static function _indexKey(&$args) {
+        extract($args, EXTR_REFS);
+        return ($returnType == self::READ_ASSOC
+            ? $fieldNameSet[$indexOfCol]
+            : $indexOfCol
+        );
+    }
+    private static function _colValue(&$col) {
+        return trim((string)$col);
+    }
+    private static function paddingEmptyCol(&$args, &$row) {
+        extract($args, EXTR_REFS);
+        $fnCount = count($fieldNameSet);
+        if ($returnType == self::READ_ASSOC
+            and $indexOfCol < $fnCount)
+        {
+            for ($paddingCount = $fnCount - $indexOfCol; $paddingCount; --$paddingCount) {
+                $row[$fieldNameSet[$indexOfCol++]] = '';
+            }
+        }
+    }
+
     //MS Excel2k: <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
     protected static $excel2kNameSpace = 'urn:schemas-microsoft-com:office:spreadsheet';
 
     protected function &_excel2kXmlToArray(&$xml, $returnType = self::READ_ARRAY) {
-        $results = array();
-        $indexOfSheet = 0;
+        $args = array(
+            'results' => array(),
+            'fieldNameSet' => false,
+            'indexOfSheet' => 0,
+            'indexOfRow' => 0,
+            'indexOfCol' => 0,
+            'returnType' => $returnType
+        );
+        extract($args, EXTR_REFS);
+
         foreach ($xml->Worksheet as $worksheet) {
             $sheet = $worksheet->Table;
             $results[$indexOfSheet] = array();
             $indexOfRow = 0;
             foreach ($sheet->Row as $row) {
                 $results[$indexOfSheet][$indexOfRow] = array();
+                if ($returnType == self::READ_ASSOC and !$fieldNameSet) {
+                    $fieldNameSet = array();
+                    foreach ($row->Cell as $cell) {
+                        $fieldNameSet[] = self::_colValue($cell->Data);
+                    }
+                    continue;
+                }
+
                 $indexOfCol = 0;
                 foreach ($row->Cell as $cell) {
                     $col = $cell->Data;
@@ -25,8 +70,10 @@ class SpreadsheetReader {
 
                     if (isset($cellAttrSet['Index'])) {
                         $number = (int)$cellAttrSet['Index'] - 1;
-                        while ($number > $indexOfCol)
-                            $results[$indexOfSheet][$indexOfRow][$indexOfCol++] = '';
+                        while ($number > $indexOfCol) {
+                            $results[$indexOfSheet][$indexOfRow][self::_indexKey($args)] = '';
+                            ++$indexOfCol;
+                        }
                         // attribute['Index'] is the column number of cell.
                         // For save space, it might ignore empty cells.
                         // example: values of column 2nd and 3rd are empty.
@@ -34,23 +81,15 @@ class SpreadsheetReader {
                         //   <Cell ss:Index="4"><Data>4</Data></Cell>
                         // Therefore we need put those empty cells back according to attribute['Index'].
                     }
-                    $results[$indexOfSheet][$indexOfRow][$indexOfCol++] = trim((string)$col);
+                    $results[$indexOfSheet][$indexOfRow][self::_indexKey($args)] = self::_colValue($col);
+                    ++$indexOfCol;
                 }
+                self::paddingEmptyCol($args, $results[$indexOfSheet][$indexOfRow]);
                 ++$indexOfRow;
             }
             ++$indexOfSheet;
         }
         return $results;
-    }
-
-    private static function _indexKey(&$args) {
-        return ($args['returnType'] == self::READ_ASSOC
-            ? $args['fieldNameSet'][$args['indexOfCol']]
-            : $args['indexOfCol']
-        );
-    }
-    private static function _colValue(&$col) {
-        return trim((string)$col);
     }
 
     protected function &_jxlXmlToArray(&$xml, $returnType = self::READ_ARRAY) {
@@ -65,10 +104,11 @@ class SpreadsheetReader {
 
         foreach ($xml->sheet as $sheet) {
             $results[$indexOfSheet] = array();
+            $indexOfRow = 0;
             foreach ($sheet->row as $row) {
                 $results[$indexOfSheet][$indexOfRow] = array();
                 if ($returnType == self::READ_ASSOC and !$fieldNameSet) {
-                    $fieldNameSet = array();
+                    $fieldNameSet = array(); //reset
                     foreach ($row->col as $col) {
                         $fieldNameSet[] = self::_colValue($col);
                     }
@@ -93,12 +133,13 @@ class SpreadsheetReader {
                     $results[$indexOfSheet][$indexOfRow][self::_indexKey($keyArgs)] = self::_colValue($col);
                     ++$indexOfCol;
                 }
-                if ($returnType == self::READ_ASSOC and $indexOfCol < count($fieldNameSet)) {
+                /*if ($returnType == self::READ_ASSOC and $indexOfCol < count($fieldNameSet)) {
                     $fixCount = count($fieldNameSet) - $indexOfCol;
                     for ( ; $fixCount; --$fixCount) {
                         $results[$indexOfSheet][$indexOfRow][$fieldNameSet[$indexOfCol++]] = '';
                     }
-                }
+                }*/
+                self::paddingEmptyCol($keyArgs, $results[$indexOfSheet][$indexOfRow]);
                 ++$indexOfRow;
             }
             ++$indexOfSheet;
