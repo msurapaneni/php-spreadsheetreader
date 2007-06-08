@@ -55,7 +55,7 @@ class SpreadsheetReaderFactoryTest extends PHPUnit_Framework_TestCase {
         $sheets = $reader->read($xlsFilePath);
 
         $this->assertEquals(2, count($sheets));
-        $this->assertEquals(128, count($sheets[0]));
+        $this->assertEquals(130, count($sheets[0]));
         $this->assertEquals(38, count($sheets[1]));
         $this->assertEquals(11, count($sheets[0][0]));
         $this->assertContains('324203026', $sheets[0][3]);
