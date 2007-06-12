@@ -81,7 +81,7 @@ class SpreadsheetReaderTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($sheets !== false);
         $this->assertEquals(2, count($sheets));
         $this->assertEquals(45665, $sheets[0][0]['EAN13']);
-        $this->assertEquals('BVCF', $sheets[1][2]['NAME']);
+        $this->assertEquals('BVCF', $sheets[1][1]['NAME']);
     }
 
     public function testSheetsAsXml() {
@@ -97,7 +97,21 @@ class SpreadsheetReaderTest extends PHPUnit_Framework_TestCase {
             )
         );
         $xmlString = $reader->asXml($sheets);
+        //file_put_contents('test.asXml_sample.xml', $xmlString);
         $sampleXmlString = file_get_contents('test.asXml_sample.xml');
+        $this->assertTrue($sampleXmlString == $xmlString);
+    }
+
+    public function testSheetsWidthFieldHeaderAsXml() {
+        $reader = new SpreadsheetReader;
+        $sheets = $reader->read('test.excel2k_2.xml', SpreadsheetReader::READ_HASH);
+        $this->assertTrue($sheets !== false);
+        $this->assertEquals(2, count($sheets));
+        $this->assertEquals(45665, $sheets[0][0]['EAN13']);
+        $this->assertEquals('BVCF', $sheets[1][1]['NAME']);
+        $xmlString = $reader->asXml($sheets);
+        //file_put_contents('test.asXml_sample2.xml', $xmlString);
+        $sampleXmlString = file_get_contents('test.asXml_sample2.xml');
         $this->assertTrue($sampleXmlString == $xmlString);
         //$this->assertEquals($sampleXmlString, $xmlString);
     }

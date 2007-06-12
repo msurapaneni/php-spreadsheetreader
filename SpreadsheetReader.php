@@ -39,6 +39,7 @@ class SpreadsheetReader {
         foreach ($xml->Worksheet as $worksheet) {
             $sheet = $worksheet->Table;
             $results[$indexOfSheet] = array();
+            $fieldNameSet = false;
             $indexOfRow = 0;
             foreach ($sheet->Row as $row) {
                 $results[$indexOfSheet][$indexOfRow] = array();
@@ -85,6 +86,7 @@ class SpreadsheetReader {
 
         foreach ($xml->sheet as $sheet) {
             $results[$indexOfSheet] = array();
+            $fieldNameSet = false;
             $indexOfRow = 0;
             foreach ($sheet->row as $row) {
                 $results[$indexOfSheet][$indexOfRow] = array();
@@ -177,7 +179,15 @@ class SpreadsheetReader {
         }
         return $this->_toArray($xmlString, $returnType);
     }
-    
+
+    private static function convCellData(&$convArgs, &$data) {
+        //extract($convArgs, EXTR_REFS);
+        return ($convArgs['iconv']
+            ? iconv($convArgs['sourceCharset'], 'utf-8//IGNORE', $data)
+            : $data
+        );
+    }
+
     /**
      * make $sheets as Xml string (Excel XML format).
      *
@@ -199,9 +209,14 @@ class SpreadsheetReader {
  xmlns:html="http://www.w3.org/TR/REC-html40"></Workbook>'
 );
 
-        $iconv = ($sourceCharset == 'utf-8' ? false : true);
+        
+        $convArgs = array(
+            'sourceCharset' => &$sourceCharset,
+            'iconv' => ($sourceCharset == 'utf-8' ? false : true)
+        );
+
         $indexOfSheet = 0;
-        foreach ($sheets as $sheet) {
+        foreach ($sheets as $sheet) :
             //<Worksheet ss:Name="Sheet1">
             //<Table>
             $worksheetNode = $doc->addChild('Worksheet');
@@ -211,21 +226,31 @@ class SpreadsheetReader {
             $worksheetNode->Table = '';//add a child with value '' by setter
             //$tableNode = $worksheetNode->addChild('Table');/add a child by addChild()
 
-            foreach ($sheet as $row) {
-                //<Row>
+            if ( !array_key_exists(0, $sheet[0]) ) {
+                //an associative array, write header fields.
                 $rowNode = $worksheetNode->Table->addChild('Row');
-
-                foreach ($row as $col) {
-                    //<Cell><Data ss:Type="Number">1</Data></Cell>
+                foreach(array_keys($sheet[0]) as $fieldName) {
                     $cellNode = $rowNode->addChild('Cell');
-                    $cellNode->Data = ($iconv
-                        ? iconv($sourceCharset, 'utf-8//IGNORE', $col)
-                        : $col
-                    );
+                    $cellNode->Data = self::convCellData($convArgs, $fieldName);
                     $cellNode->Data['ss:Type'] = 'String';
                 }
             }
-        }
+
+            foreach ($sheet as $row) :
+                //<Row>
+                $rowNode = $worksheetNode->Table->addChild('Row');
+                foreach ($row as $col) :
+                    //<Cell><Data ss:Type="Number">1</Data></Cell>
+                    $cellNode = $rowNode->addChild('Cell');
+                    $cellNode->Data = self::convCellData($convArgs, $col);
+                    $cellNode->Data['ss:Type'] = (
+                        (!is_string($col) or (is_numeric($col) and $col[0] != '0'))
+                        ? 'Number'
+                        : 'String'
+                    );
+                endforeach;//$row as $col
+            endforeach;//$sheet as $row
+        endforeach;//$sheets as $sheet
         return $doc->asXML();
     }
 }
