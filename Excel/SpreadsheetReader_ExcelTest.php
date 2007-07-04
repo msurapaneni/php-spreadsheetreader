@@ -75,27 +75,22 @@ class SpreadsheetReader_ExcelTest extends PHPUnit_Framework_TestCase {
      * case: 讀取 test.xls
      * result:
      *  2 sheets.
-     *  129 rows of first sheet.
-     *  38 rows of second sheet.
-     *  6 columns of first row of first sheet.
-     *  Row 5 of first sheet contains value '324203026'
-     *  Value of B:38 of second sheet is 170292.
+     *  5 rows of first sheet.
+     *  3 columns of first row of first sheet.
+     *  Value of B:5 of first sheet is '許功蓋'.
      *
      * @test
      */
     public function ReadFromExcelFile() {
-        $xlsFilePath = 'test.xls';
+        $xlsFilePath = 'test2.xls';
         $sheets = $this->xlsReader->read($xlsFilePath);
         
         $this->assertEquals(2, count($sheets));
-        $this->assertEquals(129, count($sheets[0]));
-        $this->assertEquals(38, count($sheets[1]));
-        $this->assertEquals(6, count($sheets[0][0]));
-        $this->assertContains('324203026', $sheets[0][4]);
-        $columnB = ord('B') - ord('A');
-        $this->assertEquals(170292, $sheets[1][37][$columnB]);
-        $this->assertEquals('324201721', $sheets[0][20][3]);
-        $this->assertEquals(115, $sheets[1][30][5]);
+        $this->assertEquals(5, count($sheets[0]));
+        $this->assertEquals(3, count($sheets[0][0]));
+        $this->assertEquals('Kaohsiung', $sheets[0][1][2]);
+        $this->assertEquals('許功蓋', $sheets[0][4][1]);
+        $this->assertEquals('nothing', $sheets[1][1][0]);
     }
 
     /**
@@ -106,9 +101,29 @@ class SpreadsheetReader_ExcelTest extends PHPUnit_Framework_TestCase {
      * @test
      */
     public function ReadExcelFileToXmlString() {
-        $xlsFilePath = 'test.xls';
-        $xmlString = $this->xlsReader->read($xlsFilePath, 'string');
+        $xlsFilePath = 'test2.xls';
+        $xmlString = $this->xlsReader->read($xlsFilePath, SpreadsheetReader_Excel::READ_XMLSTRING);
         $this->assertTrue(strpos($xmlString, '<?xml ') == 0);
+    }
+
+    /**
+     * case: 讀取 test.xls AS hash.
+     * result:
+     *  A hash.
+     *
+     * @test
+     */
+    public function ReadExcelFileAsHash() {
+        $xlsFilePath = 'test2.xls';
+        $sheets = $this->xlsReader->read($xlsFilePath, SpreadsheetReader_Excel::READ_ASSOC);
+        $this->assertEquals(2, count($sheets));
+        $this->assertEquals(4, count($sheets[0]));
+        $this->assertEquals(3, count($sheets[0][0]));
+        $this->assertNull($sheets[0][0]['name']);
+        $this->assertEquals('Kaohsiung', $sheets[0][0]['address']);
+        $this->assertEquals('許功蓋', $sheets[0][3]['name']);
+        $this->assertEquals('nothing', $sheets[1][0]['CID']);
+        $this->assertNull($sheets[1][0]['ID']);
     }
 }
 

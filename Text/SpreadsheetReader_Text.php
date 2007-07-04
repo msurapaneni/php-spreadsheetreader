@@ -1,4 +1,14 @@
 <?php
+/**
+* todo
+*
+* @category   Spreadsheet
+* @package    SpreadsheetReader
+* @author     Shih Yuncheng <shirock@educities.edu.tw>
+* @license    GNU Lesser General Public License (LGPL) version 2.1 or later
+* @link       http://code.google.com/p/php-spreadsheetreader/
+*/
+
 if (!class_exists('SpreadsheetReader'))
     require_once dirname(__FILE__) . '/../SpreadsheetReader.php';
 class SpreadsheetReader_Text extends SpreadsheetReader {

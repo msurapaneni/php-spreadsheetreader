@@ -1,46 +1,25 @@
 <?php
+/**
+* todo
+*
+* @category   Spreadsheet
+* @package    SpreadsheetReader
+* @author     Shih Yuncheng <shirock@educities.edu.tw>
+* @license    GNU Lesser General Public License (LGPL) version 2.1 or later
+* @link       http://code.google.com/p/php-spreadsheetreader/
+*/
+
 if (!class_exists('SpreadsheetReader'))
     require_once dirname(__FILE__) . '/../SpreadsheetReader.php';
+
+require_once 'OLERead.php';
 class SpreadsheetReader_Excel extends SpreadsheetReader {
-    private static $jxlCommand = FALSE;
-
-    /**
-     * Constructor
-     *
-     * @param $path     $path['java'] - Path of java
-     *                  $path['jxl'] - Path of jxl.jar
-     *
-     * @access public
-     */
-    public function __construct($path = FALSE) {
-        if ( !self::$jxlCommand ) {
-            $javaPath = (isset($path['java'])
-                ? $path['java']
-                : 'java'
-            );
-            $jxlPath = (isset($path['jxl'])
-                ? $path['jxl']
-                : dirname(__FILE__) . '/jxl.jar'
-            );
-            self::$jxlCommand = $javaPath . ' -jar "' . $jxlPath . '" -xml';
-        }
-
-        if (!self::$ignoreChar) {
-            self::$ignoreChar = array();
-            for ($i = 1; $i < 32; ++$i) {
-                if ($i == 10 or $i == 13)
-                    continue; //skip LF and CR
-                self::$ignoreChar[] = chr($i);
-            }
-        }
-    }
-    
     /**
      * Sometimes, data will contain non-readable chars.
      * XML parser will occur a parse error.
      * So we need to strip those non-readable chars.
      */
-    private static $ignoreChar = false;
+    //private static $ignoreChar = false;
 
     /**
      * $sheets = read('~/example.xls');
@@ -51,31 +30,59 @@ class SpreadsheetReader_Excel extends SpreadsheetReader {
      *
      * @param $xlsFilePath  File path of Excel sheet file.
      * @param $returnType   Type of return value.
-     *                      'array':  Array. This is default.
-     *                      'string': XML string.
+     *      READ_ARRAY  - Default. Return an numeric index array.
+     *      READ_NUM    - Same as READ_ARRAY
+     *      READ_ASSOC  - Return an associative array.
+     *                    It will use values of first row to be field name.
+     *                    Though the count of rows will less one than numeric index array.
+     *      READ_HASH   - Same as READ_ASSOC
+     *      READ_XMLSTRING - Return an XML String.
      * @return FALSE or an array contains sheets.
      */
-    public function &read($xlsFilePath, $returnType = 'array') {
-        $ReturnFalse = FALSE;
+    public function &read($xlsFilePath, $returnType = self::READ_ARRAY) {
+        $oleread = new OLERead;
+        if ($sheets =& $oleread->read($xlsFilePath)) {
+            foreach ($sheets as &$sheet) {
+                $cells =& $sheet['cells'];
+                foreach (array_keys($sheet) as $k) {
+                    unset($sheet[$k]);
+                }
+                $sheet = $cells;
+            }
+            unset($oleread);
 
-        if ( !is_readable($xlsFilePath) ) {
-            return $ReturnFalse;
+            if (($returnType == self::READ_XMLSTRING) or
+                ($returnType === 'string')
+               )
+            {
+                $sheets = $this->asXml($sheets);
+            }
+            else if ($returnType == self::READ_HASH) {
+                foreach ($sheets as &$sheet) {
+                    $header = array_shift($sheet);
+                    $numOfHeader = count($header);
+                    foreach ($sheet as &$row) {
+                        if (count($row) == $numOfHeader) {
+                            $row = array_combine($header, $row);
+                        }
+                        else {
+                            for ($i = 0; $i < $numOfHeader; ++$i) {
+                                $row[$header[$i]] = (isset($row[$i])
+                                    ? $row[$i]
+                                    : null
+                                );
+                                unset($row[$i]);
+                            }
+                        }
+                    }
+                    /*
+                    if (count($sheet) < 1)
+                        only one row.
+                    */
+                }
+            }
         }
-
-        @exec(self::$jxlCommand . ' "' . $xlsFilePath . '"', $output);
-        if ($output[0] != '<?xml version="1.0" ?>') {
-            return $ReturnFalse;
-        }
-
-        //Strip those non-readable chars
-        $xmlString = str_replace(self::$ignoreChar,
-            '',
-            implode('', $output)
-        );
-        if ($returnType == 'string') {
-            return $xmlString;
-        }
-        return $this->_toArray($xmlString);
+        return $sheets;
     }
 }
 ?>

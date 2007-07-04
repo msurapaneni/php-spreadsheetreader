@@ -1,4 +1,14 @@
 <?php
+/**
+* todo
+*
+* @category   Spreadsheet
+* @package    SpreadsheetReader
+* @author     Shih Yuncheng <shirock@educities.edu.tw>
+* @license    GNU Lesser General Public License (LGPL) version 2.1 or later
+* @link       http://code.google.com/p/php-spreadsheetreader/
+*/
+
 require_once 'SpreadsheetReader.php';
 class SpreadsheetReaderFactory {
     private function __construct() {

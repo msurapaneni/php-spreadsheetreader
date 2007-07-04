@@ -1,4 +1,14 @@
 <?php
+/**
+* todo
+*
+* @category   Spreadsheet
+* @package    SpreadsheetReader
+* @author     Shih Yuncheng <shirock@educities.edu.tw>
+* @license    GNU Lesser General Public License (LGPL) version 2.1 or later
+* @link       http://code.google.com/p/php-spreadsheetreader/
+*/
+
 class SpreadsheetReader {
     const READ_NUM = 0;
     const READ_ARRAY = 0;
