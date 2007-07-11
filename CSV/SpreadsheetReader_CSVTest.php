@@ -71,7 +71,7 @@ class SpreadsheetReader_CSVTest extends PHPUnit_Framework_TestCase {
      *
      * @test
      */
-    public function ReadFromExcelFile() {
+    public function ReadFromCsvFileToArray() {
         $xlsFilePath = 'test.csv';
         $sheets = $this->xlsReader->read($xlsFilePath);
         $this->assertEquals(1, count($sheets));
@@ -79,6 +79,28 @@ class SpreadsheetReader_CSVTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(11, count($sheets[0][0]));
         $this->assertContains('324203026', $sheets[0][3]);
         $this->assertEquals('153186', $sheets[0][19][1]);
+    }
+
+    /**
+     * case: 讀取 test.csv
+     * result:
+     *  1 sheets.
+     *  128 rows of first sheet.
+     *  38 rows of second sheet.
+     *  11 columns of first row of first sheet.
+     *  Row 4 of first sheet contains value '324203026'
+     *  Value of B:20 of sheet is 153186.
+     *
+     * @test
+     */
+    public function ReadFromCsvFileToHash() {
+        $xlsFilePath = 'test.csv';
+        $sheets = $this->xlsReader->read($xlsFilePath, SpreadsheetReader::READ_HASH);
+        $this->assertEquals(1, count($sheets));
+        $this->assertEquals(127, count($sheets[0]));
+        $this->assertEquals(11, count($sheets[0][0]));
+        $this->assertEquals('153186', $sheets[0][18]['商品序號']);
+        $this->assertEquals(164911, $sheets[0][126]['賣場編號']);
     }
 
     /**
@@ -90,7 +112,7 @@ class SpreadsheetReader_CSVTest extends PHPUnit_Framework_TestCase {
      *
      * @ test
      */
-    public function ReadExcelFileToXmlString() {
+    public function ReadCsvFileToXmlString() {
         $xlsFilePath = 'test.csv';
         $xmlString = $this->xlsReader->read($xlsFilePath, 'string');
         $this->assertTrue(strpos($xmlString, '<?xml ') == 0);

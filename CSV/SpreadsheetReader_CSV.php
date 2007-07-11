@@ -36,7 +36,7 @@ class SpreadsheetReader_CSV extends SpreadsheetReader {
      *                      'string': XML string.
      * @return FALSE or an array contains sheets.
      */
-    public function &read($csvFilePath, $returnType = 'array') {
+    public function &read($csvFilePath, $returnType = self::READ_ARRAY) {
         $ReturnFalse = FALSE;
 
         //strcmp(pathinfo($csvFilePath, PATHINFO_EXTENSION), 'csv')
@@ -51,9 +51,33 @@ class SpreadsheetReader_CSV extends SpreadsheetReader {
         }
         fclose($fp);
 
-        if ($returnType == 'string') {
+        if ($returnType == self::READ_XMLSTRING or $returnType === 'string') {
             throw new Exception('not implemented!');
             return $xmlString;
+        }
+        else if ($returnType == self::READ_HASH) {
+            foreach ($sheets as &$sheet) {
+                $header = array_shift($sheet);
+                $numOfHeader = count($header);
+                foreach ($sheet as &$row) {
+                    if (count($row) == $numOfHeader) {
+                        $row = array_combine($header, $row);
+                    }
+                    else {
+                        for ($i = 0; $i < $numOfHeader; ++$i) {
+                            $row[$header[$i]] = (isset($row[$i])
+                                ? $row[$i]
+                                : null
+                            );
+                            unset($row[$i]);
+                        }
+                    }
+                }
+                /*
+                if (count($sheet) < 1)
+                    only one row.
+                */
+            }
         }
         return $sheets;
     }

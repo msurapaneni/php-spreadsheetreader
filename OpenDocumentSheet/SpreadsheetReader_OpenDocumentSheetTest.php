@@ -53,7 +53,7 @@ class SpreadsheetReader_OpenDocumentSheetTest extends PHPUnit_Framework_TestCase
      *
      * @test
      */
-    public function ExcelFileIsNotExisted() {
+    public function FileIsNotExisted() {
         $xlsFilePath = '';
         $sheets = $this->xlsReader->read($xlsFilePath);
         $this->assertFalse($sheets);
@@ -65,7 +65,7 @@ class SpreadsheetReader_OpenDocumentSheetTest extends PHPUnit_Framework_TestCase
      *
      * @test
      */
-    public function FileIsNotAnExcelFile() {
+    public function FileIsNotAnOdsFile() {
         $xlsFilePath = __FILE__;
         $sheets = $this->xlsReader->read($xlsFilePath);
         $this->assertFalse($sheets);
@@ -75,7 +75,7 @@ class SpreadsheetReader_OpenDocumentSheetTest extends PHPUnit_Framework_TestCase
      * case: 讀取 test.xls
      * result:
      *  2 sheets.
-     *  128 rows of first sheet.
+     *  130 rows of first sheet.
      *  38 rows of second sheet.
      *  11 columns of first row of first sheet.
      *  Row 4 of first sheet contains value '324203026'
@@ -83,7 +83,7 @@ class SpreadsheetReader_OpenDocumentSheetTest extends PHPUnit_Framework_TestCase
      *
      * @test
      */
-    public function ReadFromExcelFile() {
+    public function ReadFromOdsFileToArray() {
         $xlsFilePath = 'test.ods';
         $sheets = $this->xlsReader->read($xlsFilePath);
         $this->assertEquals(2, count($sheets));
@@ -96,13 +96,31 @@ class SpreadsheetReader_OpenDocumentSheetTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * case: 讀取 test.ods
+     * result:
+     *  2 sheets as hash.
+     *  129 rows of first sheet.
+     *  37 rows of second sheet.
+     * @test
+     */
+    public function ReadFromOdsFileToHash() {
+        $xlsFilePath = 'test.ods';
+        $sheets = $this->xlsReader->read($xlsFilePath, SpreadsheetReader::READ_HASH);
+        $this->assertEquals(2, count($sheets));
+        $this->assertEquals(129, count($sheets[0]));
+        $this->assertEquals(37, count($sheets[1]));
+        $this->assertEquals('0505-8007LB', $sheets[0][0]['商品料號']);
+        $this->assertEquals(170292, $sheets[1][36]['商品序號']);
+    }
+
+    /**
      * case: 讀取 test.ods AS XMLString.
      * result:
      *  A XML String.
      *
      * @test
      */
-    public function ReadExcelFileToXmlString() {
+    public function ReadOdsFileToXmlString() {
         $xlsFilePath = 'test.ods';
         $xmlString = $this->xlsReader->read($xlsFilePath, 'string');
         $this->assertTrue(strpos($xmlString, '<?xml ') == 0);
